@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .title {
+            font-size: 3em;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #3498db;
+            text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+            transform: rotateX(20deg);
+            margin-bottom: 20px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 5px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: #3498db;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .cell.X {
+            background-color: #e74c3c;
+        }
+
+        .cell.O {
+            background-color: #2ecc71;
+        }
+
+        .cell:hover {
+            background-color: #2980b9;
+        }
+
+        .reset-button {
+            margin-top: 20px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .reset-button:hover {
+            background-color: #c0392b;
+        }
+    </style>
+    <title>Tic Tac Toe</title>
+</head>
+<body>
+<div class="container">
+    <div class="title">Tic Tac Toe</div>
+    <div class="board">
+        <div class="cell" data-cell="0"></div>
+        <div class="cell" data-cell="1"></div>
+        <div class="cell" data-cell="2"></div>
+        <div class="cell" data-cell="3"></div>
+        <div class="cell" data-cell="4"></div>
+        <div class="cell" data-cell="5"></div>
+        <div class="cell" data-cell="6"></div>
+        <div class="cell" data-cell="7"></div>
+        <div class="cell" data-cell="8"></div>
+    </div>
+    <button class="reset-button">Reset</button>
+    <p class="status"></p>
+</div>
+<script>
+    const generateRandomColor = () => {
+        const hue = Math.floor(Math.random() * 360);
+        const saturation = Math.floor(Math.random() * 50) + 50;
+        const lightness = Math.floor(Math.random() * 30) + 50;
+        return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+    };
+
+    const setBackgroundGradient = () => {
+        const gradientColor1 = generateRandomColor();
+        const gradientColor2 = generateRandomColor();
+        document.body.style.background = `linear-gradient(to bottom right, ${gradientColor1}, ${gradientColor2})`;
+    };
+
+    setBackgroundGradient();
+
+    const cells = document.querySelectorAll('.cell');
+    const resetButton = document.querySelector('.reset-button');
+    const status = document.querySelector('.status');
+    let currentPlayer = 'X';
+    let gameActive = true;
+
+    const winCombinations = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        [0, 4, 8], [2, 4, 6]
+    ];
+
+    cells.forEach(cell => {
+        cell.addEventListener('click', () => {
+            if (gameActive && !cell.textContent) {
+                cell.textContent = currentPlayer;
+                cell.classList.add(currentPlayer);
+                gameActive = checkGameStatus();
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            }
+        });
+    });
+
+    resetButton.addEventListener('click', () => {
+        cells.forEach(cell => {
+            cell.textContent = '';
+            cell.classList.remove('X', 'O');
+        });
+        currentPlayer = 'X';
+        gameActive = true;
+        status.textContent = '';
+    });
+
+    function checkGameStatus() {
+        for (const combination of winCombinations) {
+            const [a, b, c] = combination;
+            if (cells[a].textContent && cells[a].textContent === cells[b].textContent && cells[a].textContent === cells[c].textContent) {
+                status.textContent = `Player ${currentPlayer} wins!`;
+                return false;
+            }
+        }
+        if ([...cells].every(cell => cell.textContent !== '')) {
+            status.textContent = "It's a tie!";
+            return false;
+        }
+        return true;
+    }
+</script>
+</body>
+</html>
